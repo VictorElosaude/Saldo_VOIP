@@ -3,3 +3,4 @@ webdriver-manager
 apscheduler
 requests
 python-dotenv
+pytz

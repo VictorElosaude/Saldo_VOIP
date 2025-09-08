@@ -98,6 +98,6 @@ def job():
 if __name__ == "__main__":
     scheduler = BlockingScheduler()
     # Executa toda segunda-feira às 09:00
-    scheduler.add_job(job, 'cron', day_of_week='mon', hour=13, minute=1)
+    scheduler.add_job(job, 'cron', day_of_week='mon', hour=13, minute=15)
     print("Agendamento iniciado. Esperando a próxima execução...")
     scheduler.start()
