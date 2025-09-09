@@ -6,7 +6,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
-from apscheduler.schedulers.blocking import BlockingScheduler
 import datetime
 
 # Carrega variáveis do .env
@@ -60,17 +59,21 @@ def send_notification(message_text, saldo_info, webhook_url=WEBHOOK_URL):
         print(f"Erro ao enviar notificação: {e}")
 
 def job():
-    print(f"[{datetime.datetime.now()}] Iniciando tarefa agendada...")
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--no-sandbox")
-
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    print(f"[{datetime.datetime.now()}] Iniciando tarefa...")
+    driver = None
     
     try:
+        options = webdriver.ChromeOptions()
+        options.add_argument("--headless")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--no-sandbox")
+        
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        
         driver.get(URL_LOGIN)
         time.sleep(3)
+        
+        # O resto do seu código
         driver.find_element(By.XPATH, '//*[@id="login"]').send_keys(USERNAME)
         driver.find_element(By.XPATH, '//*[@id="senha"]').send_keys(PASSWORD)
         driver.find_element(By.XPATH, '//*[@id="bt-login"]/input').click()
@@ -90,18 +93,14 @@ def job():
         else:
             message = f"👍 Saldo suficiente. {saldo_formatado}."
             send_notification(message, saldo_formatado)
+
     except Exception as e:
         print(f"Ocorreu um erro: {e}")
+        send_notification("🚨 **ERRO CRÍTICO NO SCRIPT!** 🚨", f"O script falhou com o erro: {e}. Verifique os logs do Coolify.")
     finally:
-        driver.quit()
+        if driver:
+            driver.quit()
+            print("WebDriver encerrado.")
 
 if __name__ == "__main__":
-    # scheduler = BlockingScheduler()
-    # Executa todos os dias às 13:02
-    # scheduler.add_job(job, 'cron', hour=13, minute=2)
-    # print("Agendamento iniciado. Esperando a próxima execução...")
-    # scheduler.start()
-    
-    # Executa a tarefa imediatamente (sem agendamento)
     job()
-
