@@ -8,6 +8,13 @@ from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
 import datetime
 
+# --- Configuração de Persistência ---
+# Define o diretório onde o arquivo do contador será armazenado.
+# Certifique-se de que este caminho corresponde ao "mount path" do seu volume persistente no Coolify.
+PERSISTENT_DATA_PATH = "/app/data"
+RUN_COUNT_FILE = os.path.join(PERSISTENT_DATA_PATH, "run_count.txt")
+# --- Fim da Configuração de Persistência ---
+
 # Carrega variáveis do .env
 load_dotenv()
 
@@ -18,9 +25,27 @@ WEBHOOK_URL = os.environ.get("GOOGLE_CHAT_WEBHOOK_URL")
 GERENTE_WEBHOOK = os.environ.get("GOOGLE_CHAT_WEBHOOK_GERENTE")
 LOGO_URL = os.environ.get("GOOGLE_CHAT_LOGO_URL")
 
-def send_notification(message_text, saldo_info, webhook_url=WEBHOOK_URL):
+def get_run_count():
+    """Lê o contador do arquivo persistente."""
+    try:
+        if not os.path.exists(PERSISTENT_DATA_PATH):
+            os.makedirs(PERSISTENT_DATA_PATH)
+        with open(RUN_COUNT_FILE, "r") as f:
+            return int(f.read().strip())
+    except (FileNotFoundError, ValueError):
+        return 0
+
+def set_run_count(count):
+    """Salva o novo valor do contador no arquivo persistente."""
+    with open(RUN_COUNT_FILE, "w") as f:
+        f.write(str(count))
+
+def send_notification(message_text, saldo_info, webhook_url, run_count):
     try:
         headers = {"Content-Type": "application/json; charset=UTF-8"}
+        
+        chat_message_header = f"(Execução #{run_count})\n\n"
+        
         payload = {
             "cardsV2": [
                 {
@@ -29,7 +54,7 @@ def send_notification(message_text, saldo_info, webhook_url=WEBHOOK_URL):
                         "header": {"title": "📢 Monitoramento de Saldo VOIP", "subtitle": "Inovação Informa"},
                         "sections": [
                             {
-                                "header": "📊 Status Atual",
+                                "header": chat_message_header + "📊 Status Atual",
                                 "collapsible": False,
                                 "widgets": [
                                     {"image": {"imageUrl": LOGO_URL, "altText": "Logo da Inovação"}},
@@ -58,8 +83,8 @@ def send_notification(message_text, saldo_info, webhook_url=WEBHOOK_URL):
     except Exception as e:
         print(f"Erro ao enviar notificação: {e}")
 
-def job():
-    print(f"[{datetime.datetime.now()}] Iniciando tarefa...")
+def job(run_count):
+    print(f"[{datetime.datetime.now()}] Iniciando tarefa #{run_count}...")
     driver = None
     
     try:
@@ -84,18 +109,18 @@ def job():
 
         if saldo_float < 100:
             message = f"🚨 Atenção: Saldo crítico! {saldo_formatado}. Contactar o setor responsável, estamos sem créditos."
-            send_notification(message, saldo_formatado, GERENTE_WEBHOOK)
-            send_notification(message, saldo_formatado, WEBHOOK_URL)
+            send_notification(message, saldo_formatado, GERENTE_WEBHOOK, run_count)
+            send_notification(message, saldo_formatado, WEBHOOK_URL, run_count)
         elif saldo_float < 200:
             message = f"🚨 Atenção: Saldo abaixo do limite. {saldo_formatado}."
-            send_notification(message, saldo_formatado)
+            send_notification(message, saldo_formatado, WEBHOOK_URL, run_count)
         else:
             message = f"👍 Saldo suficiente. {saldo_formatado}."
-            send_notification(message, saldo_formatado)
+            send_notification(message, saldo_formatado, WEBHOOK_URL, run_count)
 
     except Exception as e:
         print(f"Ocorreu um erro: {e}")
-        send_notification("🚨 **ERRO CRÍTICO NO SCRIPT!** 🚨", f"O script falhou com o erro: {e}. Verifique os logs do Coolify.")
+        send_notification("🚨 **ERRO CRÍTICO NO SCRIPT!** 🚨", f"O script falhou com o erro: {e}. Verifique os logs do Coolify.", WEBHOOK_URL, run_count)
     finally:
         if driver:
             driver.quit()
@@ -103,6 +128,8 @@ def job():
 
 if __name__ == "__main__":
     while True:
-        job()
-        print("Tarefa concluída. Esperando 5 minutos para a próxima execução...")
-        time.sleep(10080) # 10080 segundos = 7 dias completos
+        run_count = get_run_count() + 1
+        set_run_count(run_count)
+        job(run_count)
+        print(f"Execução #{run_count} concluída. Esperando 5 minutos para a próxima...")
+        time.sleep(10000) # 604.800 segundos = 7 dias 
