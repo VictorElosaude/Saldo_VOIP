@@ -73,7 +73,6 @@ def job():
         driver.get(URL_LOGIN)
         time.sleep(3)
         
-        # O resto do seu código
         driver.find_element(By.XPATH, '//*[@id="login"]').send_keys(USERNAME)
         driver.find_element(By.XPATH, '//*[@id="senha"]').send_keys(PASSWORD)
         driver.find_element(By.XPATH, '//*[@id="bt-login"]/input').click()
@@ -103,4 +102,7 @@ def job():
             print("WebDriver encerrado.")
 
 if __name__ == "__main__":
-    job()
+    while True:
+        job()
+        print("Tarefa concluída. Esperando 5 minutos para a próxima execução...")
+        time.sleep(10080) # 10080 segundos = 7 dias completos
