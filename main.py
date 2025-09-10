@@ -67,7 +67,7 @@ def send_notification(message_text, saldo_info, webhook_url, run_count):
                                 "widgets": [
                                     {"buttonList": {"buttons": [
                                         {"text": "Abrir Painel", "onClick": {"openLink": {"url": URL_LOGIN}}},
-                                        {"text": "Ver Detalhes", "onClick": {"openLink": {"url": " http://192.168.40.45:8050"}}}
+                                        {"text": "Ver Detalhes", "onClick": {"openLink": {"url": "http://192.168.40.25:3000/"}}}
                                     ]}},
                                     {"textParagraph": {"text": "<font color=\"#808080\">Powered by Setor de Inovação - GNI </font>"}}
                                 ]
