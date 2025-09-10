@@ -51,10 +51,10 @@ def send_notification(message_text, saldo_info, webhook_url, run_count):
                 {
                     "cardId": "saldo-notification-card",
                     "card": {
-                        "header": {"title": "📢 Monitoramento de Saldo VOIP", "subtitle": "Inovação Informa"},
+                        "header": {"title": "📢 Monitoramento de Saldo VOIP"},
                         "sections": [
                             {
-                                "header": chat_message_header + "📊 Status Atual",
+                                
                                 "collapsible": False,
                                 "widgets": [
                                     {"image": {"imageUrl": LOGO_URL, "altText": "Logo da Inovação"}},
@@ -67,9 +67,9 @@ def send_notification(message_text, saldo_info, webhook_url, run_count):
                                 "widgets": [
                                     {"buttonList": {"buttons": [
                                         {"text": "Abrir Painel", "onClick": {"openLink": {"url": URL_LOGIN}}},
-                                        {"text": "Ver Detalhes", "onClick": {"openLink": {"url": "https://statuspage.io/"}}}
+                                        {"text": "Ver Detalhes", "onClick": {"openLink": {"url": " http://192.168.40.45:8050"}}}
                                     ]}},
-                                    {"textParagraph": {"text": "<font color=\"#808080\">Powered by Setor de Inovação – Inovando Hoje para Conquistar o Amanhã</font>"}}
+                                    {"textParagraph": {"text": "<font color=\"#808080\">Powered by Setor de Inovação - GNI </font>"}}
                                 ]
                             }
                         ]
