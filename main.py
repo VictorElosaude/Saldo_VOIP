@@ -69,7 +69,7 @@ def send_notification(message_text, saldo_info, webhook_url, run_count):
                                         {"text": "Abrir Painel", "onClick": {"openLink": {"url": URL_LOGIN}}},
                                         {"text": "Ver Detalhes", "onClick": {"openLink": {"url": "https://statuspage.io/"}}}
                                     ]}},
-                                    {"textParagraph": {"text": "<font color=\"#808080\">Enviado pelo setor de Inovação 💡</font>"}}
+                                    {"textParagraph": {"text": "<font color=\"#808080\">Powered by Setor de Inovação – Inovando Hoje para Conquistar o Amanhã</font>"}}
                                 ]
                             }
                         ]
