@@ -67,7 +67,7 @@ def send_notification(message_text, saldo_info, webhook_url, run_count):
                                 "widgets": [
                                     {"buttonList": {"buttons": [
                                         {"text": "Abrir Painel", "onClick": {"openLink": {"url": URL_LOGIN}}},
-                                        {"text": "Ver Detalhes", "onClick": {"openLink": {"url": "http://dashboard.inovaprocessos.com:3000/"}}}
+                                        {"text": "Ver Detalhes", "onClick": {"openLink": {"url": "https://inova.elosaude.com.br/"}}}
                                     ]}},
                                     {"textParagraph": {"text": "<font color=\"#808080\">Powered by Setor de Inovação - GNI </font>"}}
                                 ]
